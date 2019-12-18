@@ -1,7 +1,7 @@
 # k8sti
+Python Flask, SQLAlchemy, Bootstrap Webpage
 
 ## Database
-Uses SQLAlchemy
 
 User
 * id: Primary Key Auto Increment
@@ -27,7 +27,7 @@ Project
 | /logout | GET | Logout user |
 | /projects | POST | Send deletion request to Kubernetes |
 
-## html
+## Templates
 | FILE | Description |
 | ---- | ----------- |
 | base.html | Base page of the website |
@@ -35,3 +35,6 @@ Project
 | login.html | Page for login |
 | home.html | Page for adding projects |
 | plist.html | Page for managing(deleting) projects |
+
+## Static
+Bootstrap CSS and JS
