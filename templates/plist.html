@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+{% if session['logged_in'] %}
+<h2>Manage Project</h2>
+<div style="margin-top:30px;">
+    <form action="/projects" method="POST">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Repo URL</th>
+                    <th>Container URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if projects %}
+                {% for p in projects %}
+                <tr>
+                    <td><input type="radio" name="project" value="{{ p.title }}"></td>
+                    <td>{{ p.title }}</td>
+                    <td>{{ p.url }}</td>
+                    <td>{{ p.k8s_url }}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <div class="row" style="margin-top:30px">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Delete Project</button>
+            </div>
+        </div>
+    </form>
+    <br>
+    <span style="font-weight:bold">Result:</span>
+    {% if result %}
+    <div class="alert alert-info" style="width:70%">
+       {{ result }}
+    </div>
+    {% endif %}
+</div>
+
+{% else %}
+<p>Need Login</p>
+<a href="/login">Login</a>
+<a href="/join">Join</a>
+
+{% endif %}
+{% endblock %}

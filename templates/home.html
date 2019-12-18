@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+{% if session['logged_in'] %}
+<h2>Register Project</h2>
+<div style="margin-top:30px; width:70%">
+    <form action="" method="POST">
+        <div class="form-group">
+            <label for="TITLE">Title:</label>
+            <input type="text" class="form-control" id="TITLE" name="title" maxlength="64" placeholder="Enter Project Title">
+        </div>
+        <div class="form-group">
+            <label for="REPO">Github Repository URL:</label>
+            <input type="url" class="form-control" id="REPO" name="url" placeholder="EX: http://github.com/user/project" >
+        </div>
+        <div class="form-group">
+            <label for="BRANCH">Branch Name:</label>
+            <input type="text" class="form-control" id="BRANCH" name="branch" placeholder="EX: master">
+        </div>
+        <div class="form-group">
+            <label for="TOKEN">Token:</label>
+            <input type="text" class="form-control" id="TOKEN" name="token" placeholder="Enter Project Token">
+        </div>
+        <div class="row" style="margin-top:30px">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Add Project</button>
+            </div>
+        </div>
+    </form>
+    <br>
+    <span style="font-weight:bold">Result:</span>
+    {% if result %}
+    <div class="alert alert-info">
+       {{ result }}
+    </div>
+    {% endif %}
+</div>
+
+{% else %}
+<h2>Need Login</h2>
+<a href="/login">Login</a>
+<a href="/join">Join</a>
+
+{% endif %}
+{% endblock %}
