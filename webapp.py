@@ -47,14 +47,14 @@ class Project(db.Model):
     k8s_url = db.Column(db.Text, nullable=False)
     uid = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, url, branch, token, res, uid, k8s_url):
+    def __init__(self, title, url, branch, token, k8s_url, uid):
         self.title = title
         self.url = url
         self.branch = branch
         self.token = token
-        self.res = res
-        self.uid = uid
         self.k8s_url = k8s_url
+        self.uid = uid
+
 
 # Main Page
 @app.route('/', methods=['GET', 'POST'])
@@ -87,7 +87,7 @@ def home():
             json_data = json.dumps(project, sort_keys=True, indent=4)  # Dict to JSON
 
             resp = requests.post(url=f"{builder_url}/repo", data=json_data, timeout=120)
-            # TODO Build Service 서버로 프로젝트 정보 JSON 전달
+            # Build Service 서버로 프로젝트 정보 JSON 전달
  
             status = resp.status_code
 
@@ -96,7 +96,7 @@ def home():
                 res = result['result']
 
                 if res != 'failed':  # TODO Build Service에서 result로 URL 반환 / 실패 시 failed 반환
-                    new_p = Project(title, url, branch, token, res, uid, "http://aaaa")
+                    new_p = Project(title, url, branch, token, "http://aaaa", uid)
                     db.session.add(new_p)
                     db.session.commit()
                     # 프로젝트 등록
@@ -107,6 +107,7 @@ def home():
                 return render_template('home.html', result="Error: {}".format(status))
 
         return render_template('home.html', result="None")
+
 
 # Project List
 @app.route('/projects', methods=['GET', 'POST'])
@@ -137,12 +138,11 @@ def plist():
             resp = requests.post(url="K8S API URL", data=json_data, timeout=120)
             # TODO K8S API로 삭제할 프로젝트 정보 JSON 전달
 
-            status = int(resp.status_code())
+            status = resp.status_code
 
             if status < 400:  # http status 400 이상은 오류
-                res_data = resp.json()
-                result = json.loads(res_data)  # JSON to Dict
-                res = result['data']['result']
+                result = resp.json()  # JSON to Dict
+                res = result['result']
 
                 if res != 'failed':  # TODO K8S API에서 결과 전송 성공 시
                     db.session.delete(remove)
