@@ -63,17 +63,24 @@ def home():
             branch = request.form['branch']
             token = request.form['token']
 
-            uname = request.cookies.get('uname')
+            if title is None or url is None or branch is None:
+                return render_template('home.html', result="Input all information")
 
+            uname = request.cookies.get('uname')
             data = User.query.filter_by(uname=uname).first()
             u_data = data.__dict__
             uid = u_data['id']
 
+            data = Project.query.filter_by(title=title, uid=uid).first()
+
+            if data is not None:
+                return render_template('home.html', result="There is same titled project")
+
             project = {"title": title, "url": url, "branch": branch, "token": token, "uid": uid}
 
-            json_data = json.dumps(project)  # Dict to JSON
+            json_data = json.dumps(project, sort_keys=True, indent=4)  # Dict to JSON
 
-            resp = requests.post(url="Build Service Server URL", data=json_data, timeout=60)
+            resp = requests.post(url="Build Service Server URL", data=json_data, timeout=120)
             # TODO Build Service 서버로 프로젝트 정보 JSON 전달
 
             status = int(resp.status_code())
@@ -111,18 +118,18 @@ def plist():
         data = Project.query.filter_by(uid=u_data['id']).all()
 
         if request.method == 'POST':  # K8S에 삭제 요청 전송
-            title = request.form.getlist('project')
+            pid = request.form.getlist('project')
 
-            if not title:
+            if not pid:
                 return render_template('plist.html', result="Select the Project", projects=data)
 
-            data = Project.query.filter_by(title=title[0]).first()
-            p_data = data.__dict__
+            remove = Project.query.filter_by(pid=pid[0]).first()
+            p_data = remove.__dict__
 
-            project = {"title": p_data['title'], "uid": p_data['uid']}
-            json_data = json.dumps(project)  # Dict to JSON
+            p_info = {"title": p_data['title'], "uid": p_data['uid']}
+            json_data = json.dumps(p_info, sort_keys=True, indent=4)  # Dict to JSON
 
-            resp = requests.post(url="K8S API URL", data=json_data, timeout=60)
+            resp = requests.post(url="K8S API URL", data=json_data, timeout=120)
             # TODO K8S API로 삭제할 프로젝트 정보 JSON 전달
 
             status = int(resp.status_code())
@@ -133,7 +140,6 @@ def plist():
                 res = result['data']['result']
 
                 if res != 'failed':  # TODO K8S API에서 결과 전송 성공 시
-                    remove = Project.query.filter_by(title=title).first()  # 같은 타이틀의 경우 먼저 만들어 진 프로젝트 삭제
                     db.session.delete(remove)
                     db.session.commit()
                     # 프로젝트 삭제
