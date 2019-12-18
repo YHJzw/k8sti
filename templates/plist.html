@@ -21,7 +21,11 @@
                     <td><input type="radio" name="project" value="{{ p.pid }}"></td>
                     <td>{{ p.title }}</td>
                     <td>{{ p.url }}</td>
-                    <td>{{ p.k8s_url }}</td>
+                    <td>
+                        {% if p.k8s_url != "" %}
+                        <a href="{{ p.k8s_url }}">{{ p.k8s_url }}</a>
+                        {% endif %}
+                    </td>
                     <td>{{ p.status }}</td>
                 </tr>
                 {% endfor %}

@@ -6,8 +6,8 @@ import requests
 import json
 import pymysql
 
-builder_url = "http://0.0.0.0:8080"
-k8s_url = ""
+builder_url = "http://10.0.0.185:8080"
+k8s_url = "http://34.97.171.66"
 # TODO url 정보 추가
 
 app = Flask(__name__)
@@ -144,10 +144,8 @@ def plist():
             remove = Project.query.filter_by(pid=pid[0]).first()
             p_data = remove.__dict__
 
-            p_info = {"project_name": p_data['title']}
-            json_data = json.dumps(p_info, sort_keys=True, indent=4)  # Dict to JSON
-
-            resp = requests.post(url=f"{k8s_url}/delete", data=json_data, timeout=120)
+            p_info = {"project_name": p_data['title']} # Dict to JSON
+            resp = requests.post(url=f"{k8s_url}/delete", json=p_info, timeout=120)
             # K8S API로 삭제할 프로젝트 정보 JSON 전달
 
             status = resp.status_code
