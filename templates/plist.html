@@ -11,6 +11,7 @@
                     <th>Title</th>
                     <th>Repo URL</th>
                     <th>Container URL</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,6 +22,7 @@
                     <td>{{ p.title }}</td>
                     <td>{{ p.url }}</td>
                     <td>{{ p.k8s_url }}</td>
+                    <td>{{ p.status }}</td>
                 </tr>
                 {% endfor %}
                 {% else %}

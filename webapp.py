@@ -46,6 +46,7 @@ class Project(db.Model):
     token = db.Column(db.Text, nullable=True)
     k8s_url = db.Column(db.Text, nullable=False)
     uid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    status = ""
 
     def __init__(self, title, url, branch, token, k8s_url, uid):
         self.title = title
@@ -122,6 +123,12 @@ def plist():
         u_data = data.__dict__
 
         data = Project.query.filter_by(uid=u_data['id']).all()
+
+        for project in data:
+            resp = requests.get(url=f"{builder_url}/repo/{project.title}", timeout=120)
+            result = resp.json()
+            project.status = result['log']
+            
 
         if request.method == 'POST':  # K8S에 삭제 요청 전송
             pid = request.form.getlist('project')
