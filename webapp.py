@@ -63,7 +63,7 @@ def home():
             branch = request.form['branch']
             token = request.form['token']
 
-            if title is None or url is None or branch is None:
+            if len(title) == 0 or len(url) == 0 or len(branch) == 0:
                 return render_template('home.html', result="Input all information")
 
             uname = request.cookies.get('uname')
