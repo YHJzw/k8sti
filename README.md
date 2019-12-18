@@ -28,7 +28,6 @@ Project
 | /projects | POST | Send deletion request to Kubernetes |
 
 ## html
-Flask Web App
 | FILE | Description |
 | ---- | ----------- |
 | base.html | Base page of the website |
