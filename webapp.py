@@ -127,13 +127,10 @@ def plist():
         for project in data:
             resp = requests.get(url=f"{builder_url}/repo/{project.title}", timeout=120)
             result = resp.json()
-<<<<<<< HEAD
+
             project.status = result.get('status', "")
             project.k8s_url = result.get('url', "")
         db.session.commit()
-=======
-            project.status = result['log']
->>>>>>> f6f5395d32984920867719226c7780f49f8e45d3
 
         if request.method == 'POST':  # K8S에 삭제 요청 전송
             pid = request.form.getlist('project')
