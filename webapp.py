@@ -6,6 +6,9 @@ import requests
 import json
 import pymysql
 
+builder_url = "http://127.0.0.1"
+k8s_url = ""
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -44,11 +47,14 @@ class Project(db.Model):
     k8s_url = db.Column(db.Text, nullable=False)
     uid = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, url, branch, token):
+    def __init__(self, title, url, branch, token, res, uid, k8s_url):
         self.title = title
         self.url = url
         self.branch = branch
         self.token = token
+        self.res = res
+        self.uid = uid
+        self.k8s_url = k8s_url
 
 # Main Page
 @app.route('/', methods=['GET', 'POST'])
@@ -80,18 +86,17 @@ def home():
 
             json_data = json.dumps(project, sort_keys=True, indent=4)  # Dict to JSON
 
-            resp = requests.post(url="Build Service Server URL", data=json_data, timeout=120)
+            resp = requests.post(url=f"{builder_url}/repo", data=json_data, timeout=120)
             # TODO Build Service 서버로 프로젝트 정보 JSON 전달
-
-            status = int(resp.status_code())
+ 
+            status = resp.status_code
 
             if status < 400:  # http status 400 이상은 오류
-                res_data = resp.json()
-                result = json.loads(res_data)  # JSON to Dict
-                res = result['data']['result']
+                result = resp.json()  # JSON to Dict
+                res = result['result']
 
                 if res != 'failed':  # TODO Build Service에서 result로 URL 반환 / 실패 시 failed 반환
-                    new_p = Project(title, url, branch, token, res, uid)
+                    new_p = Project(title, url, branch, token, res, uid, "http://aaaa")
                     db.session.add(new_p)
                     db.session.commit()
                     # 프로젝트 등록
@@ -226,7 +231,7 @@ def logout():
 if __name__ == '__main__':
     db.create_all()
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=8080)
 
 ''' # add user
     user = User('admin', 'admin')
