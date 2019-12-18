@@ -6,7 +6,7 @@ import requests
 import json
 import pymysql
 
-builder_url = "http://127.0.0.1"
+builder_url = "http://0.0.0.0:8080"
 k8s_url = ""
 
 app = Flask(__name__)
@@ -97,7 +97,7 @@ def home():
                 res = result['result']
 
                 if res != 'failed':  # TODO Build Service에서 result로 URL 반환 / 실패 시 failed 반환
-                    new_p = Project(title, url, branch, token, "http://aaaa", uid)
+                    new_p = Project(title, url, branch, token, "", uid)
                     db.session.add(new_p)
                     db.session.commit()
                     # 프로젝트 등록
@@ -127,8 +127,9 @@ def plist():
         for project in data:
             resp = requests.get(url=f"{builder_url}/repo/{project.title}", timeout=120)
             result = resp.json()
-            project.status = result['log']
-            
+            project.status = result.get('status', "")
+            project.k8s_url = result.get('url', "")
+        db.session.commit()
 
         if request.method == 'POST':  # K8S에 삭제 요청 전송
             pid = request.form.getlist('project')
