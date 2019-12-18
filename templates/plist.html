@@ -17,7 +17,7 @@
             <tbody>
                 {% if projects %}
                 {% for p in projects %}
-                <tr>
+                <tr style="vertical-align:center">
                     <td><input type="radio" name="project" value="{{ p.pid }}"></td>
                     <td>{{ p.title }}</td>
                     <td>{{ p.url }}</td>
