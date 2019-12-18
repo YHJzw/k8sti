@@ -144,7 +144,7 @@ def plist():
             p_info = {"title": p_data['title'], "uid": p_data['uid']}
             json_data = json.dumps(p_info, sort_keys=True, indent=4)  # Dict to JSON
 
-            resp = requests.post(url="K8S API URL", data=json_data, timeout=120)
+            resp = requests.post(url=f"{k8s_url}/delete", data=json_data, timeout=120)
             # TODO K8S API로 삭제할 프로젝트 정보 JSON 전달
 
             status = resp.status_code
