@@ -8,6 +8,7 @@ import pymysql
 
 builder_url = "http://0.0.0.0:8080"
 k8s_url = ""
+# TODO url 정보 추가
 
 app = Flask(__name__)
 api = Api(app)
@@ -147,15 +148,15 @@ def plist():
             json_data = json.dumps(p_info, sort_keys=True, indent=4)  # Dict to JSON
 
             resp = requests.post(url=f"{k8s_url}/delete", data=json_data, timeout=120)
-            # TODO K8S API로 삭제할 프로젝트 정보 JSON 전달
+            # K8S API로 삭제할 프로젝트 정보 JSON 전달
 
             status = resp.status_code
 
             if status < 400:  # http status 400 이상은 오류
-                result = resp.json()  # JSON to Dict
+                result = resp.json()
                 res = result['status']
 
-                if res != 'failed':  # TODO K8S API에서 결과 전송 성공 시
+                if res != 'failed':  # status 성공시 proceeded, 실패시 failed
                     db.session.delete(remove)
                     db.session.commit()
                     # 프로젝트 삭제
