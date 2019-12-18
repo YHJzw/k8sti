@@ -40,7 +40,7 @@ class Project(db.Model):
     __tablename__ = 'project'
 
     pid = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64), nullable=False)
+    title = db.Column(db.String(64), nullable=False, unique=True)
     url = db.Column(db.Text, nullable=False)
     branch = db.Column(db.Text, nullable=True)
     token = db.Column(db.Text, nullable=True)
@@ -78,12 +78,13 @@ def home():
             u_data = data.__dict__
             uid = u_data['id']
 
-            data = Project.query.filter_by(title=title, uid=uid).first()
+            data = Project.query.filter_by(title=title).first()
+            # 중복 타이틀 방지
 
             if data is not None:
                 return render_template('home.html', result="There is same titled project")
 
-            project = {"title": title, "url": url, "branch": branch, "token": token, "uid": uid}
+            project = {"title": title, "url": url, "branch": branch, "token": token}
 
             json_data = json.dumps(project, sort_keys=True, indent=4)  # Dict to JSON
 
@@ -93,11 +94,12 @@ def home():
             status = resp.status_code
 
             if status < 400:  # http status 400 이상은 오류
-                result = resp.json()  # JSON to Dict
-                res = result['result']
+                result = resp.json()
+                res = result['result']  # 빌드 및 컨테이너 등록 결과
 
-                if res != 'failed':  # TODO Build Service에서 result로 URL 반환 / 실패 시 failed 반환
-                    new_p = Project(title, url, branch, token, "", uid)
+                # res = 성공 시 build Start / 실패 시 res에 failed 저장
+                if res != 'failed':
+                    new_p = Project(title, url, branch, token, "k8s_url", uid)
                     db.session.add(new_p)
                     db.session.commit()
                     # 프로젝트 등록
@@ -141,7 +143,7 @@ def plist():
             remove = Project.query.filter_by(pid=pid[0]).first()
             p_data = remove.__dict__
 
-            p_info = {"title": p_data['title'], "uid": p_data['uid']}
+            p_info = {"project_name": p_data['title']}
             json_data = json.dumps(p_info, sort_keys=True, indent=4)  # Dict to JSON
 
             resp = requests.post(url=f"{k8s_url}/delete", data=json_data, timeout=120)
@@ -151,7 +153,7 @@ def plist():
 
             if status < 400:  # http status 400 이상은 오류
                 result = resp.json()  # JSON to Dict
-                res = result['result']
+                res = result['status']
 
                 if res != 'failed':  # TODO K8S API에서 결과 전송 성공 시
                     db.session.delete(remove)
