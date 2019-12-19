@@ -6,7 +6,7 @@
     <form action="/projects" method="POST">
         <table class="table table-striped">
             <thead class="thead-dark">
-                <tr>
+                <tr style="text-align:center">
                     <th></th>
                     <th>Title</th>
                     <th>Repo URL</th>
@@ -17,13 +17,13 @@
             <tbody>
                 {% if projects %}
                 {% for p in projects %}
-                <tr style="vertical-align:center">
+                <tr style="vertical-align:center;text-align:center">
                     <td><input type="radio" name="project" value="{{ p.pid }}"></td>
                     <td>{{ p.title }}</td>
                     <td>{{ p.url }}</td>
                     <td>
                         {% if p.k8s_url != "" %}
-                        <a href="{{ p.k8s_url }}">{{ p.k8s_url }}</a>
+                        <a href="{{ p.k8s_url }}/">{{ p.k8s_url }}/</a>
                         {% endif %}
                     </td>
                     <td>{{ p.status }}</td>

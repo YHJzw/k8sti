@@ -6,7 +6,7 @@ import requests
 import json
 import pymysql
 
-builder_url = "http://10.0.0.185:8080"
+builder_url = "http://112.150.189.246:8080"
 k8s_url = "http://34.97.171.66"
 # TODO url 정보 추가
 
@@ -89,7 +89,7 @@ def home():
 
             json_data = json.dumps(project, sort_keys=True, indent=4)  # Dict to JSON
 
-            resp = requests.post(url=f"{builder_url}/repo", data=json_data, timeout=120)
+            resp = requests.post(url=f"{builder_url}/repo", data=json_data, timeout=300)
             # Build Service 서버로 프로젝트 정보 JSON 전달
  
             status = resp.status_code
@@ -145,7 +145,7 @@ def plist():
             p_data = remove.__dict__
 
             p_info = {"project_name": p_data['title']} # Dict to JSON
-            resp = requests.post(url=f"{k8s_url}/delete", json=p_info, timeout=120)
+            resp = requests.post(url=f"{k8s_url}/delete", json=p_info, timeout=300)
             # K8S API로 삭제할 프로젝트 정보 JSON 전달
 
             status = resp.status_code
