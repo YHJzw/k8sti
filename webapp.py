@@ -8,7 +8,6 @@ import pymysql
 
 builder_url = "http://112.150.189.246:8080"
 k8s_url = "http://34.97.171.66"
-# TODO url 정보 추가
 
 app = Flask(__name__)
 api = Api(app)
@@ -240,6 +239,8 @@ def logout():
 
 if __name__ == '__main__':
     db.create_all()
+    builder_url = input("Build Service IP: ")
+    k8s_url = input("Server IP: ")
 
     app.run(debug=True, host='0.0.0.0', port=8080)
 
